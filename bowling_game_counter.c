@@ -22,7 +22,7 @@ first_rolls_pins_uint_t first_rolls_pins_uint = 0;
 second_rolls_pins_uint_t second_rolls_pins_uint = 0;
 
 
-void roll(int);     // is called each time the player rolls a ball. The argument is the number of pins knocked down
+void roll(int number_of_pins_in_one_roll);     // is called each time the player rolls a ball. The argument is the number of pins knocked down
 int score();        // returns the total score for that game
 
 int main(void)
@@ -55,7 +55,9 @@ int main(void)
         {
             first_rolls_pins_uint = (uint32_t)(first_rolls_pins_char[0]) - ASCII_TO_UINT_CONST;
             printf("-Saved number of pins knocked down in first rolls == %d == \r\n", first_rolls_pins_uint);
-        }     
+        }
+
+        roll(first_rolls_pins_uint);  
 
         number_of_rolls++;
 
@@ -84,16 +86,21 @@ int main(void)
         }
         number_of_rolls--;
         number_of_frame++;
+
+        roll(second_rolls_pins_uint);
+       
     }
+    printf("\r\nTotal score of the game : !!! %d !!!",  score());
     return 0;
+    
 }
 
-void roll(int)
+void roll(int number_of_pins_in_one_roll)
 {
-
+    number_of_points = number_of_points + number_of_pins_in_one_roll;
 }
 
 int score()
 {
-
+    return number_of_points;
 }
