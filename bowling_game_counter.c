@@ -4,6 +4,7 @@
 
 #define MAX_NUMBER_OF_FRAME 10
 #define ASCII_TO_UINT_CONST 48
+#define STRIKE_VALUE 10
 
 typedef uint32_t score_t;
 typedef uint32_t number_of_frame_t;
@@ -44,12 +45,13 @@ int main(void)
             if (strncmp(first_rolls_pins_char, "10", 2) == 0) // 10 - STRIKE
             {
                 first_rolls_pins_uint = 10;
+                printf("-Saved number of pins knocked down in first rolls == %d == - STRIKE! \r\n\n", first_rolls_pins_uint);
             }
             else
             {
                 first_rolls_pins_uint = 1;
+                printf("-Saved number of pins knocked down in first rolls == %d == \r\n", first_rolls_pins_uint);
             }
-            printf("-Saved number of pins knocked down in first rolls == %d == \r\n", first_rolls_pins_uint);
         }
         else
         {
@@ -61,33 +63,40 @@ int main(void)
 
         number_of_rolls++;
 
-        
-
-        // second rolls
-        printf("Give number of pins knocked down in %d frame and %d rolls: ", number_of_frame, number_of_rolls);
-        fgets( second_rolls_pins_char, 5, stdin);
-        printf("%s", second_rolls_pins_char);
-        if(second_rolls_pins_char[0] == '1')
+        if(first_rolls_pins_uint != STRIKE_VALUE) // if wasn`t strike in first roll
         {
-            if (strncmp(second_rolls_pins_char, "10", 2) == 0) // 10 - STRIKE
+            printf("Give number of pins knocked down in %d frame and %d rolls: ", number_of_frame, number_of_rolls);
+            fgets( second_rolls_pins_char, 5, stdin);
+            printf("%s", second_rolls_pins_char);
+            if(second_rolls_pins_char[0] == '1')
             {
-                second_rolls_pins_uint = 10;
+                if (strncmp(second_rolls_pins_char, "10", 2) == 0) // 10 - STRIKE
+                {
+                    second_rolls_pins_uint = 10;
+                }
+                else
+                {
+                    second_rolls_pins_uint = 1;
+                }
+                printf("-Saved number of pins knocked down in second rolls == %d == ", second_rolls_pins_uint);
             }
             else
             {
-                second_rolls_pins_uint = 1;
+                second_rolls_pins_uint = (uint32_t)(second_rolls_pins_char[0]) - ASCII_TO_UINT_CONST;
+                printf("-Saved number of pins knocked down in second rolls == %d ==", second_rolls_pins_uint);
             }
-            printf("-Saved number of pins knocked down in second rolls == %d == \r\n\n", second_rolls_pins_uint);
-        }
-        else
-        {
-            second_rolls_pins_uint = (uint32_t)(second_rolls_pins_char[0]) - ASCII_TO_UINT_CONST;
-            printf("-Saved number of pins knocked down in second rolls == %d == \r\n\n", second_rolls_pins_uint);
-        }
-        number_of_rolls--;
-        number_of_frame++;
 
-        roll(second_rolls_pins_uint);
+            if((first_rolls_pins_uint + second_rolls_pins_uint) >= 10) printf(" - SPARE!\r\n\n");
+            else printf("\r\n\n");
+            
+            number_of_rolls--;
+            number_of_frame++;
+
+            roll(second_rolls_pins_uint);
+        }
+
+        // second rolls
+
        
     }
     printf("\r\nTotal score of the game : !!! %d !!!",  score());
