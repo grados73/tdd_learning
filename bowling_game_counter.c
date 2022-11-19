@@ -12,6 +12,7 @@ typedef uint32_t number_of_frame_t;
 typedef uint32_t number_of_rolls_t;
 typedef uint32_t first_rolls_pins_uint_t;
 typedef uint32_t second_rolls_pins_uint_t;
+typedef uint32_t extra_rolls_pins_uint_t;
 typedef uint32_t first_roll_number_t;
 typedef bool is_strike_t;
 typedef bool is_spare_t;
@@ -26,9 +27,11 @@ is_spare_t is_spare = false;
 
 char first_rolls_pins_char[5];
 char second_rolls_pins_char[5];
+char extra_rolls_pins_char[5];
 
 first_rolls_pins_uint_t first_rolls_pins_uint = 0;
 second_rolls_pins_uint_t second_rolls_pins_uint = 0;
+extra_rolls_pins_uint_t extra_rolls_pins_uint = 0;
 
 
 void roll(int number_of_pins_in_one_roll);     // is called each time the player rolls a ball. The argument is the number of pins knocked down
@@ -38,7 +41,6 @@ int main(void)
 {
     printf("Welcome in bowling score program.\r\n");
     printf("Give number of pins knocked down in each rolls in each frame.\r\n\n");
-    //printf("Include a dot ('.') in a sentence to exit:\r\n");
     for(uint8_t i = 0 ; i < MAX_NUMBER_OF_FRAME ; i++)
     {
         uint32_t temp_number_knoceked = 0;
@@ -104,8 +106,90 @@ int main(void)
         number_of_rolls--;
         number_of_frame++;
 
-        // second rolls
-    printf("Total score after %d frame: %d\r\n============================================================\r\n\n",  number_of_frame-1, score());
+        if(i == MAX_NUMBER_OF_FRAME-1) //last frame
+        {
+            if(is_strike)
+            {
+                number_of_rolls = 3;
+                number_of_rolls_t number_of_extra_roll = 1;
+                printf("You get two extra roll!\r\n");
+                printf("Give number of pins knocked down in %d extra roll: ", number_of_extra_roll);
+                fgets( extra_rolls_pins_char, 5, stdin);
+                printf("%s", extra_rolls_pins_char);
+                if(extra_rolls_pins_char[0] == '1')
+                {
+                    if (strncmp(extra_rolls_pins_char, "10", 2) == 0) // 10 - SPARE
+                    {
+                        extra_rolls_pins_uint = 10;
+                    }
+                    else
+                    {
+                        extra_rolls_pins_uint = 1;
+                    }
+                    printf("-Saved number of pins knocked down in extra rolls number %d is  == %d == ", number_of_extra_roll, extra_rolls_pins_uint);
+                }
+                else
+                {
+                    extra_rolls_pins_uint = (uint32_t)(extra_rolls_pins_char[0]) - ASCII_TO_UINT_CONST;
+                    printf("-Saved number of pins knocked down in extra rolls number %d is  == %d == ", number_of_extra_roll, extra_rolls_pins_uint);
+                }
+                roll(extra_rolls_pins_uint);
+                number_of_extra_roll++;
+                number_of_rolls++;
+                printf("\r\n");
+
+                printf("Give number of pins knocked down in %d extra roll: ", number_of_extra_roll);
+                fgets( extra_rolls_pins_char, 5, stdin);
+                printf("%s", extra_rolls_pins_char);
+                if(extra_rolls_pins_char[0] == '1')
+                {
+                    if (strncmp(extra_rolls_pins_char, "10", 2) == 0) // 10 - SPARE
+                    {
+                        extra_rolls_pins_uint = 10;
+                    }
+                    else
+                    {
+                        extra_rolls_pins_uint = 1;
+                    }
+                    printf("-Saved number of pins knocked down in extra rolls number %d is  == %d == ", number_of_extra_roll, extra_rolls_pins_uint);
+                }
+                else
+                {
+                    extra_rolls_pins_uint = (uint32_t)(extra_rolls_pins_char[0]) - ASCII_TO_UINT_CONST;
+                    printf("-Saved number of pins knocked down in extra rolls number %d is  == %d == ", number_of_extra_roll, extra_rolls_pins_uint);
+                }
+                roll(extra_rolls_pins_uint);
+            }
+            else if(is_spare)
+            {
+                number_of_rolls = 3;
+                number_of_rolls_t number_of_extra_roll = 1;
+                printf("You get one extra roll!\r\n");
+                printf("Give number of pins knocked down in %d extra roll: ", number_of_extra_roll);
+                fgets( extra_rolls_pins_char, 5, stdin);
+                printf("%s", extra_rolls_pins_char);
+                if(extra_rolls_pins_char[0] == '1')
+                {
+                    if (strncmp(extra_rolls_pins_char, "10", 2) == 0) // 10 - SPARE
+                    {
+                        extra_rolls_pins_uint = 10;
+                    }
+                    else
+                    {
+                        extra_rolls_pins_uint = 1;
+                    }
+                    printf("-Saved number of pins knocked down in extra rolls number %d is  == %d == ", number_of_extra_roll, extra_rolls_pins_uint);
+                }
+                else
+                {
+                    extra_rolls_pins_uint = (uint32_t)(extra_rolls_pins_char[0]) - ASCII_TO_UINT_CONST;
+                    printf("-Saved number of pins knocked down in extra rolls number %d is  == %d == ", number_of_extra_roll, extra_rolls_pins_uint);
+                }
+                roll(extra_rolls_pins_uint);
+
+            }
+        }
+        else printf("Total score after %d frame: %d\r\n============================================================\r\n\n",  number_of_frame-1, score());
 
     }
     printf("\r\nTotal score of the game : !!! %d !!!",  score());
@@ -147,9 +231,10 @@ void roll(int number_of_pins_in_one_roll)
             else number_of_points = number_of_points + number_of_pins_in_one_roll;
             is_strike_again = false;
         }
+
     }
 
-    else    // SECOND ROLL
+    else if(number_of_rolls == 2)   // SECOND ROLL
     {
         if((number_of_pins_in_one_roll + first_roll_number) >= 10)
         {
@@ -163,11 +248,10 @@ void roll(int number_of_pins_in_one_roll)
         else number_of_points = number_of_points + number_of_pins_in_one_roll;
     }
 
-
-
-
-
-
+    else if(number_of_rolls > 2)
+    {
+        number_of_points = number_of_points + number_of_pins_in_one_roll;
+    }
 }
 
 int score()
